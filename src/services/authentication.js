@@ -1,103 +1,53 @@
-import { account, databases } from "../lib/appwrite";
-import { ID } from "appwrite";
+import api from "./api";
 
-const DATABASE_ID = import.meta.env.VITE_APPWRITE_DATABASE_ID;
-const USERS_COLLECTION_ID = import.meta.env.VITE_APPWRITE_USERS_ID;
-
-// Signup and create user
-export const signup = async (email, password, name, role) => {
-  try {
-    // Create user account (Appwrite generates a valid unique ID)
-    const user = await account.create(ID.unique(), email, password, name);
-
-    // Create user profile in database (document ID matches user ID)
-    await databases.createDocument(DATABASE_ID, USERS_COLLECTION_ID, user.$id, {
-      userId: user.$id,
-      name,
-      email,
-      role,
-      createdAt: new Date().toISOString(),
-    });
-
-    return user;
-  } catch (error) {
-    throw error;
+// Signup user
+export const signup = async (userData) => {
+  const data = await api.post("/auth/signup", userData);
+  if (data.token) {
+    localStorage.setItem("token", data.token);
+    localStorage.setItem("user", JSON.stringify(data.user));
   }
+  return data;
 };
 
-// Login a user
+// Login user
 export const login = async (email, password) => {
-  try {
-    const session = await account.createEmailPasswordSession(email, password);
-    return session;
-  } catch (error) {
-    throw error;
+  const data = await api.post("/auth/login", { email, password });
+  if (data.token) {
+    localStorage.setItem("token", data.token);
+    localStorage.setItem("user", JSON.stringify(data.user));
   }
+  return data;
 };
 
-// Logout current user session
+// Logout user
 export const logout = async () => {
-  try {
-    await account.deleteSession("current");
-  } catch (error) {
-    throw error;
-  }
+  localStorage.removeItem("token");
+  localStorage.removeItem("user");
 };
 
-// Get current logged-in user
-export const getCurrentUser = async () => {
-  try {
-    const user = await account.get();
-    return user;
-  } catch (error) {
-    throw error;
-  }
+// Get current user from storage
+export const getCurrentUser = () => {
+  const user = localStorage.getItem("user");
+  return user ? JSON.parse(user) : null;
 };
 
-// Get user profile from DB by userId
-export const getUserProfile = async (userId) => {
-  try {
-    const userProfile = await databases.getDocument(
-      DATABASE_ID,
-      USERS_COLLECTION_ID,
-      userId
-    );
-    return userProfile;
-  } catch (error) {
-    throw error;
-  }
+// Get user profile from backend
+export const getUserProfile = async () => {
+  return await api.get("/auth/profile");
 };
 
-// Update user profile in DB
-export const updateUserProfile = async (userId, updatedData) => {
-  try {
-    const updatedProfile = await databases.updateDocument(
-      DATABASE_ID,
-      USERS_COLLECTION_ID,
-      userId,
-      updatedData
-    );
-    return updatedProfile;
-  } catch (error) {
-    throw error;
-  }
+// Check user roles
+export const getUserRoles = () => {
+  const user = getCurrentUser();
+  return user ? [user.role] : [];
 };
 
-// Send password reset email
+// Placeholders
 export const sendPasswordResetEmail = async (email) => {
-  try {
-    await account.createRecovery(email, "https://yourapp.com/reset-password");
-  } catch (error) {
-    throw error;
-  }
+  console.log("Password reset email placeholder - Add backend route if needed");
 };
 
-// Get current user's role
-export const getUserRoles = async (userId) => {
-  try {
-    const userProfile = await getUserProfile(userId);
-    return userProfile.role;
-  } catch (error) {
-    throw error;
-  }
+export const updateUserProfile = async (profileData) => {
+  console.log("Update profile placeholder - Add backend route if needed");
 };

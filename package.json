@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "server:dev": "nodemon server/index.js",
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview"
@@ -13,6 +14,8 @@
     "@heroicons/react": "^2.2.0",
     "@tailwindcss/vite": "^4.1.12",
     "appwrite": "^19.0.0",
+    "axios": "^1.13.2",
+    "firebase": "^12.6.0",
     "framer-motion": "^12.23.12",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
