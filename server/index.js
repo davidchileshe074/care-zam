@@ -73,15 +73,21 @@ const allowedOrigins = [
     process.env.FRONTEND_URL,
     'http://localhost:3000',
     'http://localhost:5173',
-    'https://zamcare.netlify.app1' // Replace with your actual Netlify URL
+    'https://zamcare1.netlify.app' // Corrected production URL
 ].filter(Boolean);
 
 const corsOptions = {
     origin: function (origin, callback) {
+        // Allow requests with no origin (like mobile apps or curl)
         if (!origin) return callback(null, true);
-        if (process.env.NODE_ENV === 'development' || allowedOrigins.indexOf(origin) !== -1) {
+
+        const isAllowed = allowedOrigins.includes(origin) ||
+            (origin.endsWith('.netlify.app') && origin.includes('zamcare1'));
+
+        if (process.env.NODE_ENV === 'development' || isAllowed) {
             callback(null, true);
         } else {
+            console.error(`CORS Error: Origin ${origin} not allowed`);
             callback(new Error('Not allowed by CORS'));
         }
     },
