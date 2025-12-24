@@ -73,7 +73,7 @@ const allowedOrigins = [
     process.env.FRONTEND_URL,
     'http://localhost:3000',
     'http://localhost:5173',
-    'https://zamcare.netlify.app' // Replace with your actual Netlify URL
+    'https://zamcare.netlify.app1' // Replace with your actual Netlify URL
 ].filter(Boolean);
 
 const corsOptions = {
