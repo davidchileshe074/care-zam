@@ -95,3 +95,8 @@ export const updateVolunteer = async (id, data) => {
 export const logVolunteerHours = async (id, hours) => {
     return await api.post(`/volunteers/${id}/hours`, { hours });
 };
+
+// Analytics
+export const getDashboardAnalytics = async () => {
+    return await api.get("/analytics/dashboard");
+};

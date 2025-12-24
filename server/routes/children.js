@@ -8,23 +8,23 @@ const {
     addProgressReport
 } = require('../controllers/children');
 
-const { protect } = require('../middleware/auth');
+const { protect, authorize } = require('../middleware/auth');
 
 const router = express.Router();
 
 router
     .route('/')
     .get(getChildren)
-    .post(protect, createChild);
+    .post(protect, authorize('admin', 'volunteer'), createChild);
 
 router
     .route('/:id')
     .get(getChild)
-    .put(protect, updateChild)
-    .delete(protect, deleteChild);
+    .put(protect, authorize('admin', 'volunteer'), updateChild)
+    .delete(protect, authorize('admin'), deleteChild);
 
 router
     .route('/:id/reports')
-    .post(protect, addProgressReport);
+    .post(protect, authorize('admin', 'volunteer'), addProgressReport);
 
 module.exports = router;

@@ -18,14 +18,14 @@ const Navbar = () => {
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 20);
-    window.addEventListener("scroll", handleScroll);
+    window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   useEffect(() => {
     const currentUser = getCurrentUser();
     setUser(currentUser);
-    setMobileMenuOpen(false); // Close menu on route change
+    setMobileMenuOpen(false);
   }, [location.pathname]);
 
   const handleLogout = async () => {
@@ -45,26 +45,21 @@ const Navbar = () => {
     { name: "Donate", path: "/donate" },
   ];
 
-  const adminLinks = [
-    { name: "Overview", path: "/dashboard" },
-    { name: "Admin", path: "/admin" },
-  ];
-
   return (
     <nav
-      className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-500 ${isScrolled ? "py-3 glass" : "py-6 bg-transparent"
+      className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-700 ${isScrolled ? "py-4 glass mx-4 mt-4 rounded-3xl" : "py-8 bg-transparent"
         }`}
     >
-      <div className="max-w-7xl mx-auto px-6 flex justify-between items-center">
+      <div className="max-w-7xl mx-auto px-8 flex justify-between items-center">
         {/* Logo */}
         <Link
           to={user ? "/dashboard" : "/"}
-          className="flex items-center space-x-2 group"
+          className="flex items-center space-x-3 group"
         >
-          <div className="p-2 bg-indigo-600 rounded-xl group-hover:rotate-12 transition-transform duration-300 shadow-lg shadow-indigo-200">
+          <div className="p-2.5 bg-indigo-600 rounded-2xl group-hover:rotate-12 transition-all duration-500 shadow-xl shadow-indigo-200">
             <HeartIcon className="h-6 w-6 text-white" />
           </div>
-          <span className={`text-2xl font-black tracking-tighter ${isScrolled ? 'text-slate-900' : 'text-indigo-900'}`}>
+          <span className={`text-2xl font-black tracking-tighter transition-colors duration-500 ${isScrolled ? 'text-slate-900' : 'text-slate-900'}`}>
             Zam<span className="text-indigo-600">Care</span>
           </span>
         </Link>
@@ -75,30 +70,38 @@ const Navbar = () => {
             <Link
               key={link.name}
               to={link.path}
-              className={`px-4 py-2 rounded-full text-sm font-semibold transition-all duration-300 hover:bg-indigo-50 hover:text-indigo-600 ${location.pathname === link.path ? "text-indigo-600" : "text-slate-600"
+              className={`px-5 py-2.5 rounded-2xl text-[13px] font-black uppercase tracking-widest transition-all duration-500 hover:bg-slate-50 hover:text-indigo-600 ${location.pathname === link.path ? "text-indigo-600 bg-indigo-50/50" : "text-slate-600"
                 }`}
             >
               {link.name}
             </Link>
           ))}
 
-          <div className="h-6 w-px bg-slate-200 mx-4" />
+          <div className="h-4 w-px bg-slate-200 mx-4" />
 
           {user ? (
-            <div className="flex items-center space-x-4">
-              {adminLinks.map((link) => (
+            <div className="flex items-center space-x-2">
+              <Link
+                to="/dashboard"
+                className={`px-5 py-2.5 rounded-2xl text-[13px] font-black uppercase tracking-widest transition-all duration-500 hover:bg-slate-50 ${location.pathname === "/dashboard" ? "text-slate-900 bg-slate-50" : "text-slate-500"
+                  }`}
+              >
+                Overview
+              </Link>
+
+              {user.role === 'admin' && (
                 <Link
-                  key={link.name}
-                  to={link.path}
-                  className={`px-4 py-2 rounded-full text-sm font-semibold transition-all duration-300 hover:bg-slate-100 ${location.pathname === link.path ? "text-slate-900" : "text-slate-500"
+                  to="/admin"
+                  className={`px-5 py-2.5 rounded-2xl text-[13px] font-black uppercase tracking-widest transition-all duration-500 hover:bg-slate-50 ${location.pathname === "/admin" ? "text-slate-900 bg-slate-50" : "text-slate-500"
                     }`}
                 >
-                  {link.name}
+                  Admin
                 </Link>
-              ))}
+              )}
+
               <button
                 onClick={handleLogout}
-                className="flex items-center space-x-2 bg-red-50 text-red-600 px-5 py-2.5 rounded-full text-sm font-bold hover:bg-red-600 hover:text-white transition-all transform hover:scale-105 active:scale-95 shadow-sm"
+                className="ml-2 flex items-center space-x-2 bg-red-50 text-red-600 px-6 py-3 rounded-2xl text-[11px] font-black uppercase tracking-widest hover:bg-red-600 hover:text-white transition-all transform hover:scale-105 active:scale-95 shadow-sm"
               >
                 <ArrowRightOnRectangleIcon className="h-4 w-4" />
                 <span>Logout</span>
@@ -107,16 +110,16 @@ const Navbar = () => {
           ) : (
             <Link
               to="/auth"
-              className="bg-indigo-600 text-white px-7 py-2.5 rounded-full text-sm font-bold shadow-lg shadow-indigo-200 hover:bg-indigo-700 hover:shadow-indigo-300 transition-all transform hover:-translate-y-0.5 active:scale-95"
+              className="btn-primary !py-3.5 !px-8 !text-[11px]"
             >
-              Partner Login
+              Partner Access
             </Link>
           )}
         </div>
 
         {/* Mobile Toggle */}
         <button
-          className="md:hidden p-2 text-slate-900 hover:bg-slate-100 rounded-lg"
+          className="md:hidden p-3 text-slate-900 bg-white/50 backdrop-blur-md rounded-2xl border border-white shadow-sm"
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
         >
           {mobileMenuOpen ? <XMarkIcon className="h-6 w-6" /> : <Bars3Icon className="h-6 w-6" />}
@@ -127,34 +130,55 @@ const Navbar = () => {
       <AnimatePresence>
         {mobileMenuOpen && (
           <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            className="md:hidden bg-white border-t border-slate-100 overflow-hidden shadow-2xl"
+            initial={{ opacity: 0, y: -20, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -20, scale: 0.95 }}
+            className="md:hidden fixed inset-x-4 top-24 z-[90] bg-white rounded-[2.5rem] border border-slate-100 overflow-hidden shadow-2xl p-8"
           >
-            <div className="flex flex-col p-6 space-y-4">
-              {[...navLinks, ...(user ? adminLinks : [])].map((link) => (
+            <div className="flex flex-col space-y-4">
+              {navLinks.map((link) => (
                 <Link
                   key={link.name}
                   to={link.path}
-                  className="text-lg font-bold text-slate-800 hover:text-indigo-600"
+                  className={`text-2xl font-black transition-colors ${location.pathname === link.path ? 'text-indigo-600' : 'text-slate-800'}`}
                 >
                   {link.name}
                 </Link>
               ))}
+
+              {user && (
+                <>
+                  <Link
+                    to="/dashboard"
+                    className={`text-2xl font-black transition-colors ${location.pathname === "/dashboard" ? 'text-indigo-600' : 'text-slate-800'}`}
+                  >
+                    Overview
+                  </Link>
+                  {user.role === 'admin' && (
+                    <Link
+                      to="/admin"
+                      className={`text-2xl font-black transition-colors ${location.pathname === "/admin" ? 'text-indigo-600' : 'text-slate-800'}`}
+                    >
+                      Admin Panel
+                    </Link>
+                  )}
+                </>
+              )}
+
+              <div className="h-px bg-slate-100 my-4" />
               {user ? (
                 <button
                   onClick={handleLogout}
-                  className="w-full bg-red-500 text-white py-4 rounded-2xl font-bold shadow-lg shadow-red-100"
+                  className="w-full bg-red-500 text-white py-5 rounded-[1.5rem] font-black uppercase tracking-widest text-xs shadow-xl shadow-red-100"
                 >
-                  Logout
+                  Terminate Session
                 </button>
               ) : (
                 <Link
                   to="/auth"
-                  className="w-full bg-indigo-600 text-white py-4 rounded-2xl font-bold text-center shadow-lg shadow-indigo-100"
+                  className="w-full bg-indigo-600 text-white py-5 rounded-[1.5rem] font-black uppercase tracking-widest text-xs text-center shadow-xl shadow-indigo-100"
                 >
-                  Get Started
+                  Get Involved
                 </Link>
               )}
             </div>

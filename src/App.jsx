@@ -10,6 +10,7 @@ import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
 import Admin from "./pages/Admin";
 import AddChild from "./pages/AddChild";
+import ProtectedRoute from "./components/ProtectedRoute";
 import Layout from "./components/Layout";
 
 function App() {
@@ -24,9 +25,33 @@ function App() {
           <Route path="/children" element={<Children />} />
           <Route path="/stories" element={<Stories />} />
           <Route path="/auth" element={<Auth />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/admin" element={<Admin />} />
-          <Route path="/add-child" element={<AddChild />} />
+
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/admin"
+            element={
+              <ProtectedRoute allowedRoles={['admin']}>
+                <Admin />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/add-child"
+            element={
+              <ProtectedRoute allowedRoles={['admin', 'volunteer']}>
+                <AddChild />
+              </ProtectedRoute>
+            }
+          />
         </Routes>
       </Layout>
     </Router>

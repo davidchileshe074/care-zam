@@ -6,19 +6,19 @@ const {
     updateVolunteer,
     logHours
 } = require('../controllers/volunteers');
-const { protect } = require('../middleware/auth');
+const { protect, authorize } = require('../middleware/auth');
 
 const router = express.Router();
 
 router.route('/')
-    .get(protect, getVolunteers)
+    .get(protect, authorize('admin'), getVolunteers)
     .post(createVolunteer);
 
 router.route('/:id')
-    .get(protect, getVolunteer)
-    .put(protect, updateVolunteer);
+    .get(protect, authorize('admin'), getVolunteer)
+    .put(protect, authorize('admin'), updateVolunteer);
 
 router.route('/:id/hours')
-    .post(protect, logHours);
+    .post(protect, authorize('admin'), logHours);
 
 module.exports = router;

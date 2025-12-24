@@ -42,177 +42,184 @@ const Auth = () => {
           name: formData.name,
           role: formData.role
         });
-        // On our expert backend, signup returns the token/user, 
-        // and our service already saved it. 
         navigate("/dashboard");
       }
     } catch (err) {
-      setError(err); // Interceptor already parsed the message
+      setError(err);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen grid lg:grid-cols-2">
-      {/* Left side: Visuals */}
-      <div className="hidden lg:flex relative bg-indigo-900 overflow-hidden items-center justify-center">
-        <div className="absolute inset-0 z-0">
-          <img
-            src="https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?q=80&w=2070&auto=format&fit=crop"
-            className="w-full h-full object-cover opacity-30"
-            alt="Impactful image"
-          />
+    <div className="min-h-screen bg-white flex flex-col lg:flex-row overflow-hidden">
+      {/* Visual Identity Panel */}
+      <div className="lg:w-[45%] bg-slate-950 relative overflow-hidden flex flex-col items-center justify-center p-20 text-white min-h-[40vh] lg:min-h-screen">
+        <div className="absolute inset-0 opacity-40">
+          <img src="https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?q=80&w=2070&auto=format&fit=crop" className="w-full h-full object-cover grayscale" alt="" />
         </div>
-        <div className="relative z-10 p-12 text-white">
+        <div className="absolute inset-0 bg-gradient-to-br from-indigo-900/80 via-slate-950/90 to-slate-950" />
+
+        <div className="relative z-10 max-w-md">
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="w-20 h-20 bg-white/10 backdrop-blur-3xl rounded-[2rem] border border-white/20 flex items-center justify-center mb-12 shadow-2xl"
           >
-            <div className="p-4 bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl w-fit mb-8">
-              <FingerPrintIcon className="h-12 w-12 text-white" />
-            </div>
-            <h1 className="text-5xl font-black mb-6 tracking-tighter">
-              Secure access to our <br />
-              <span className="text-indigo-400">Admin Portal.</span>
-            </h1>
-            <p className="text-xl text-indigo-100/70 max-w-md leading-relaxed">
-              Managing impact shouldn't be hard. Log in to access your dashboard, track sponsorships, and manage volunteer data.
-            </p>
+            <FingerPrintIcon className="h-10 w-10 text-indigo-400" />
           </motion.div>
+
+          <h1 className="text-6xl font-black tracking-tighter mb-8 leading-[0.9]">
+            Empowerment <br /> Starts <span className="text-indigo-400">Here.</span>
+          </h1>
+          <p className="text-xl text-slate-400 font-medium leading-relaxed mb-12 italic opacity-80">
+            "Access the infrastructure of hope. Log in to manage your contributions and witness the evolution of our community."
+          </p>
+
+          <div className="flex -space-x-4">
+            {[1, 2, 3, 4].map(i => (
+              <div key={i} className="w-12 h-12 rounded-full border-4 border-slate-950 bg-slate-800 flex items-center justify-center font-black text-[10px] text-slate-400">
+                {String.fromCharCode(64 + i)}
+              </div>
+            ))}
+            <div className="pl-8 flex items-center text-[10px] font-black uppercase tracking-widest text-indigo-400">
+              + 4k Partners
+            </div>
+          </div>
         </div>
+
+        {/* Floating Accents */}
+        <div className="absolute bottom-[-10%] right-[-10%] w-[400px] h-[400px] bg-indigo-500/10 rounded-full blur-[100px]" />
       </div>
 
-      {/* Right side: Form */}
-      <div className="flex items-center justify-center p-8 bg-slate-50">
+      {/* Entry Interface */}
+      <div className="lg:w-[55%] flex items-center justify-center p-8 lg:p-24 bg-[#fcfdfe]">
         <motion.div
-          className="w-full max-w-md"
+          className="w-full max-w-lg"
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.6 }}
         >
-          <div className="text-center mb-10">
-            <h2 className="text-3xl font-black text-slate-900 mb-2">
-              {isLogin ? "Welcome back" : "Join the cause"}
+          <div className="mb-16">
+            <h2 className="text-5xl font-black text-slate-900 tracking-tighter mb-4 leading-none">
+              {isLogin ? "Digital Portal Access" : "Create Impact Profile"}
             </h2>
-            <p className="text-slate-500 font-medium">
-              {isLogin
-                ? "Enter your credentials to continue"
-                : "Create a partner account to get started"}
+            <p className="text-slate-400 font-bold uppercase text-[10px] tracking-[0.3em]">
+              {isLogin ? "AUTHENTICATION REQUIRED" : "NEW PARTNER REGISTRATION"}
             </p>
           </div>
 
-          <div className="glass p-8 rounded-[2rem] border border-white shadow-2xl">
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <AnimatePresence mode="wait">
-                {!isLogin && (
-                  <motion.div
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: "auto" }}
-                    exit={{ opacity: 0, height: 0 }}
-                    className="space-y-4"
-                  >
-                    <div>
-                      <label className="block text-sm font-bold text-slate-700 mb-2 ml-1">Full Name</label>
-                      <div className="relative">
-                        <UserIcon className="h-5 w-5 absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
-                        <input
-                          name="name"
-                          type="text"
-                          required
-                          value={formData.name}
-                          onChange={handleChange}
-                          className="w-full pl-12 pr-4 py-4 rounded-2xl bg-white border border-slate-100 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all font-medium text-slate-900 shadow-sm"
-                          placeholder="John Doe"
-                        />
-                      </div>
+          <form onSubmit={handleSubmit} className="space-y-10">
+            <AnimatePresence mode="wait">
+              {!isLogin && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0, y: -20 }}
+                  animate={{ opacity: 1, height: "auto", y: 0 }}
+                  exit={{ opacity: 0, height: 0, y: -20 }}
+                  className="space-y-10"
+                >
+                  <div className="group">
+                    <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4 ml-1">Legal Full Name</label>
+                    <div className="relative">
+                      <UserIcon className="h-6 w-6 absolute left-6 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-indigo-600 transition-colors" />
+                      <input
+                        name="name"
+                        type="text"
+                        required
+                        value={formData.name}
+                        onChange={handleChange}
+                        className="input-premium pl-16 py-6"
+                        placeholder="ALEXANDER CHAMBERS"
+                      />
                     </div>
-                    <div>
-                      <label className="block text-sm font-bold text-slate-700 mb-2 ml-1">Account Type</label>
+                  </div>
+                  <div className="group">
+                    <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4 ml-1">Account Permission Tier</label>
+                    <div className="relative">
                       <select
                         name="role"
                         value={formData.role}
                         onChange={handleChange}
-                        className="w-full px-4 py-4 rounded-2xl bg-white border border-slate-100 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all font-bold text-slate-900 shadow-sm appearance-none"
+                        className="input-premium px-8 py-6 appearance-none font-black text-slate-900 uppercase tracking-widest text-[11px]"
                       >
-                        <option value="user">General Partner</option>
-                        <option value="volunteer">Volunteer Lead</option>
-                        <option value="admin">Admin</option>
+                        <option value="user">General Supporter</option>
+                        <option value="volunteer">Volunteer Specialist</option>
+                        <option value="admin">Institutional Admin</option>
                       </select>
+                      <ChevronRightIcon className="h-5 w-5 absolute right-8 top-1/2 -translate-y-1/2 text-slate-400 rotate-90" />
                     </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-
-              <div>
-                <label className="block text-sm font-bold text-slate-700 mb-2 ml-1">Email Address</label>
-                <div className="relative">
-                  <EnvelopeIcon className="h-5 w-5 absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
-                  <input
-                    name="email"
-                    type="email"
-                    required
-                    value={formData.email}
-                    onChange={handleChange}
-                    className="w-full pl-12 pr-4 py-4 rounded-2xl bg-white border border-slate-100 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all font-medium text-slate-900 shadow-sm"
-                    placeholder="john@example.com"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-bold text-slate-700 mb-2 ml-1">Password</label>
-                <div className="relative">
-                  <LockClosedIcon className="h-5 w-5 absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
-                  <input
-                    name="password"
-                    type="password"
-                    required
-                    value={formData.password}
-                    onChange={handleChange}
-                    className="w-full pl-12 pr-4 py-4 rounded-2xl bg-white border border-slate-100 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all font-medium text-slate-900 shadow-sm"
-                    placeholder="••••••••"
-                  />
-                </div>
-              </div>
-
-              {error && (
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  className="p-4 bg-red-50 text-red-600 rounded-2xl text-sm font-bold border border-red-100 text-center"
-                >
-                  {error}
+                  </div>
                 </motion.div>
               )}
+            </AnimatePresence>
 
-              <button
-                type="submit"
-                disabled={loading}
-                className="btn-primary w-full py-5 text-lg font-black mt-6 shadow-indigo-200"
-              >
-                {loading ? "Processing..." : isLogin ? "Sign In" : "Create Account"}
-              </button>
-            </form>
-
-            <div className="mt-8 text-center pt-8 border-t border-slate-100">
-              <p className="text-slate-500 font-bold">
-                {isLogin ? "Don't have an account?" : "Already have an account?"}
-              </p>
-              <button
-                onClick={() => setIsLogin(!isLogin)}
-                className="mt-2 text-indigo-600 font-black hover:text-indigo-700 transition-colors flex items-center justify-center mx-auto group"
-              >
-                {isLogin ? "Join as a partner" : "Sign into portal"}
-                <ChevronRightIcon className="h-4 w-4 ml-1 group-hover:translate-x-1 transition-transform" />
-              </button>
+            <div className="group">
+              <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4 ml-1">Secure Email Gateway</label>
+              <div className="relative">
+                <EnvelopeIcon className="h-6 w-6 absolute left-6 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-indigo-600 transition-colors" />
+                <input
+                  name="email"
+                  type="email"
+                  required
+                  value={formData.email}
+                  onChange={handleChange}
+                  className="input-premium pl-16 py-6"
+                  placeholder="name@organization.com"
+                />
+              </div>
             </div>
+
+            <div className="group">
+              <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4 ml-1">Encrypted Passphrase</label>
+              <div className="relative">
+                <LockClosedIcon className="h-6 w-6 absolute left-6 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-indigo-600 transition-colors" />
+                <input
+                  name="password"
+                  type="password"
+                  required
+                  value={formData.password}
+                  onChange={handleChange}
+                  className="input-premium pl-16 py-6"
+                  placeholder="••••••••••••"
+                />
+              </div>
+            </div>
+
+            {error && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="p-6 bg-red-50 text-red-600 rounded-[1.5rem] text-[10px] font-black uppercase tracking-widest border border-red-100 text-center"
+              >
+                ACCESS DENIED: {error}
+              </motion.div>
+            )}
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="btn-primary w-full !rounded-[2rem] !py-8 !text-lg !shadow-indigo-100"
+            >
+              {loading ? "VERIFYING CREDENTIALS..." : isLogin ? "AUTHORIZE ENTRY" : "INITIATE ACCOUNT"}
+            </button>
+          </form>
+
+          <div className="mt-16 text-center pt-12 border-t border-slate-100">
+            <p className="text-slate-400 font-bold uppercase text-[10px] tracking-widest mb-4">
+              {isLogin ? "New to the initiative?" : "Existing member?"}
+            </p>
+            <button
+              onClick={() => setIsLogin(!isLogin)}
+              className="text-slate-900 font-black tracking-tighter text-2xl hover:text-indigo-600 transition-all flex items-center justify-center mx-auto group"
+            >
+              {isLogin ? "Register Access" : "Login Portal"}
+              <ChevronRightIcon className="h-6 w-6 ml-2 group-hover:translate-x-2 transition-transform" />
+            </button>
           </div>
         </motion.div>
       </div>
     </div>
   );
 };
+
 
 export default Auth;

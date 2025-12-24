@@ -21,6 +21,9 @@ exports.getVolunteer = asyncHandler(async (req, res, next) => {
     res.status(200).json({ success: true, data: volunteer });
 });
 
+const User = require('../models/User');
+const { createNotification } = require('./notifications');
+
 // @desc    Create volunteer (Signup)
 // @route   POST /api/volunteers
 // @access  Public
@@ -31,6 +34,31 @@ exports.createVolunteer = asyncHandler(async (req, res, next) => {
     }
 
     const volunteer = await Volunteer.create(req.body);
+
+    // Notify Admins
+    const admins = await User.find({ role: 'admin' });
+    const adminPromises = admins.map(admin =>
+        createNotification(
+            admin._id,
+            'New Volunteer! 🤝',
+            `${volunteer.name} has signed up to help! Check their interests.`,
+            'Volunteer',
+            '/admin'
+        )
+    );
+    await Promise.all(adminPromises);
+
+    // Notify User if they exist
+    if (req.user) {
+        await createNotification(
+            req.user.id,
+            'Volunteer Application Received! 🌟',
+            'Thanks for signing up to volunteer with ZamCare. We will be in touch soon!',
+            'Volunteer',
+            '/dashboard'
+        );
+    }
+
     res.status(201).json({ success: true, data: volunteer });
 });
 

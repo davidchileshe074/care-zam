@@ -7,19 +7,19 @@ const {
     deleteStory
 } = require('../controllers/stories');
 
-const { protect } = require('../middleware/auth');
+const { protect, authorize } = require('../middleware/auth');
 
 const router = express.Router();
 
 router
     .route('/')
     .get(getStories)
-    .post(protect, createStory);
+    .post(protect, authorize('admin', 'volunteer'), createStory);
 
 router
     .route('/:id')
     .get(getStory)
-    .put(protect, updateStory)
-    .delete(protect, deleteStory);
+    .put(protect, authorize('admin', 'volunteer'), updateStory)
+    .delete(protect, authorize('admin'), deleteStory);
 
 module.exports = router;

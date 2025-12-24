@@ -7,19 +7,19 @@ const {
     assignVolunteer
 } = require('../controllers/tasks');
 
-const { protect } = require('../middleware/auth');
+const { protect, authorize } = require('../middleware/auth');
 
 const router = express.Router();
 
 router.route('/')
     .get(getTasks)
-    .post(protect, createTask);
+    .post(protect, authorize('admin'), createTask);
 
 router.route('/:id')
     .get(getTask)
-    .put(protect, updateTask);
+    .put(protect, authorize('admin'), updateTask);
 
 router.route('/:id/assign')
-    .post(protect, assignVolunteer);
+    .post(protect, authorize('admin'), assignVolunteer);
 
 module.exports = router;

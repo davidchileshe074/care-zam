@@ -5,7 +5,7 @@ const {
     getDonationStats
 } = require('../controllers/donations');
 
-const { protect } = require('../middleware/auth');
+const { protect, authorize } = require('../middleware/auth');
 
 const router = express.Router();
 
@@ -13,7 +13,7 @@ router.get('/stats', getDonationStats);
 
 router
     .route('/')
-    .get(protect, getDonations)
+    .get(protect, authorize('admin'), getDonations)
     .post(protect, createDonation);
 
 module.exports = router;

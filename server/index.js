@@ -27,6 +27,9 @@ const uploadRoutes = require('./routes/upload');
 const donationRoutes = require('./routes/donations');
 const storyRoutes = require('./routes/stories');
 const taskRoutes = require('./routes/tasks');
+const analyticsRoutes = require('./routes/analytics');
+const notificationRoutes = require('./routes/notifications');
+
 
 const app = express();
 
@@ -66,7 +69,28 @@ app.use(limiter);
 app.use(hpp());
 
 // Enable CORS
-app.use(cors());
+const allowedOrigins = [
+    process.env.FRONTEND_URL,
+    'http://localhost:3000',
+    'http://localhost:5173',
+    'https://zamcare.netlify.app' // Replace with your actual Netlify URL
+].filter(Boolean);
+
+const corsOptions = {
+    origin: function (origin, callback) {
+        if (!origin) return callback(null, true);
+        if (process.env.NODE_ENV === 'development' || allowedOrigins.indexOf(origin) !== -1) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+};
+
+app.use(cors(corsOptions));
 
 // Mount routers
 app.use('/api/auth', authRoutes);
@@ -77,6 +101,9 @@ app.use('/api/upload', uploadRoutes);
 app.use('/api/donations', donationRoutes);
 app.use('/api/stories', storyRoutes);
 app.use('/api/tasks', taskRoutes);
+app.use('/api/analytics', analyticsRoutes);
+app.use('/api/notifications', notificationRoutes);
+
 
 // Global Error Handler
 app.use(errorHandler);

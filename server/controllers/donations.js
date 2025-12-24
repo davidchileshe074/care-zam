@@ -18,6 +18,9 @@ exports.getDonations = asyncHandler(async (req, res, next) => {
     });
 });
 
+const User = require('../models/User');
+const { createNotification } = require('./notifications');
+
 // @desc    Create new donation
 // @route   POST /api/donations
 // @access  Private
@@ -29,6 +32,28 @@ exports.createDonation = asyncHandler(async (req, res, next) => {
     req.body.transactionId = `TXN-${Math.random().toString(36).substr(2, 9).toUpperCase()}`;
 
     const donation = await Donation.create(req.body);
+
+    // Trigger Notification for Donor
+    await createNotification(
+        req.user.id,
+        'Donation Received! ❤️',
+        `Thank you for your generous gift of ZMW ${donation.amount.toLocaleString()}. Your support changes lives.`,
+        'Donation',
+        '/dashboard'
+    );
+
+    // Notify all Admins
+    const admins = await User.find({ role: 'admin' });
+    const adminPromises = admins.map(admin =>
+        createNotification(
+            admin._id,
+            'New Donation Alert! 💰',
+            `${req.user.name} just donated ZMW ${donation.amount.toLocaleString()} for ${donation.category}.`,
+            'Donation',
+            '/admin'
+        )
+    );
+    await Promise.all(adminPromises);
 
     res.status(201).json({
         success: true,
